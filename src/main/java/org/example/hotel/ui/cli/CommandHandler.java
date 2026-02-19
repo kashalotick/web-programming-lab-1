@@ -1,4 +1,4 @@
-﻿package org.example.hotel.ui.cli;
+package org.example.hotel.ui.cli;
 
 public class CommandHandler {
 }

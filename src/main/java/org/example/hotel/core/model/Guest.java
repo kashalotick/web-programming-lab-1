@@ -1,7 +1,13 @@
-﻿package org.example.hotel.core.model;
+package org.example.hotel.core.model;
 
-public class Guest extends Model {
-    public String firstName;
-    public String secondName;
-    public String phoneNumber;
+import java.util.ArrayList;
+
+public class Guest extends Entity {
+
+    public String name;
+    public ArrayList<Reservation> reservations = new ArrayList<>();
+
+    public Guest(String name) {
+        this.name = name;
+    }
 }
