@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 public abstract class Entity {
     public final int id;
-    public static final HashMap<Class<?>, Integer> nextIds = new HashMap<>();
-    public static final HashMap<Class<?>, HashMap<Integer, Entity>> entities = new HashMap<>();
+    public static HashMap<Class<?>, Integer> nextIds = new HashMap<>();
+    public static HashMap<Class<?>, HashMap<Integer, Entity>> entities = new HashMap<>();
 
     protected Entity() {
         this.id = nextIds.computeIfAbsent(this.getClass(), k -> 0);
