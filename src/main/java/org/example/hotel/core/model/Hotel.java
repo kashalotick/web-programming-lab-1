@@ -1,5 +1,6 @@
 package org.example.hotel.core.model;
 
+import org.example.hotel.core.dto.HotelDTO;
 import org.example.hotel.core.view.IHotel;
 import org.example.hotel.core.view.IRoom;
 
@@ -14,6 +15,11 @@ public class Hotel extends Entity implements IHotel {
     private String name;
 
     public Hotel(String name) {
+        this.name = name;
+    }
+
+    protected Hotel(int id, String name) {
+        super(id);
         this.name = name;
     }
 
@@ -120,5 +126,24 @@ public class Hotel extends Entity implements IHotel {
     public void removeRoom(int id) {
         rooms.remove(id);
     }
+
+    @Override
+    public HotelDTO toDTO() {
+        var dto = new HotelDTO();
+        dto.id = getId();
+        dto.name = name;
+        return dto;
+    }
+
+    public static Hotel fromDTO(HotelDTO dto) {
+        return new Hotel(dto.id, dto.name);
+    }
+
+    public void addRoom(Room room) {
+        if (room.getHotel().equals(this)) {
+            rooms.put(room.getLocalId(), room);
+        }
+     }
+
 
 }

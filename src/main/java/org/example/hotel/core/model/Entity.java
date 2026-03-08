@@ -2,6 +2,7 @@ package org.example.hotel.core.model;
 
 import org.example.hotel.core.view.IEntity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,15 @@ public abstract class Entity implements IEntity {
         this.id = nextIds.getOrDefault(clazz, 0);
         nextIds.put(clazz, this.id + 1);
     }
+    protected Entity(int id) {
+        this.id = id;
+        var clazz = this.getClass();
+        int currentNext = nextIds.getOrDefault(clazz, 0);
+        if (id >= currentNext) {
+            nextIds.put(clazz, id + 1);
+        }
+    }
+
 
     public static void create(Entity entity) {
         var clazz = entity.getClass();
@@ -62,8 +72,15 @@ public abstract class Entity implements IEntity {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof Entity other)) return false;
+        if (!(obj instanceof IEntity other)) return false;
         if (obj.getClass() != this.getClass()) return false;
-        return this.id == other.id;
+        return this.id == other.getId();
+    }
+
+    public abstract Serializable toDTO();
+
+    public static void clear() {
+        entities.clear();
+        nextIds.clear();
     }
 }

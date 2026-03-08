@@ -1,5 +1,7 @@
 package org.example.hotel.core.model;
 
+import org.example.hotel.core.dto.ReservationDTO;
+import org.example.hotel.core.dto.RoomDTO;
 import org.example.hotel.core.view.IReservation;
 import org.example.hotel.core.view.IRoom;
 
@@ -16,6 +18,14 @@ public class Room extends Entity implements IRoom {
     private int price;
 
     public Room(Hotel hotel, int localId, String type, int price) {
+        this.hotel = hotel;
+        this.localId = localId;
+        this.type = type;
+        this.price = price;
+    }
+
+    protected Room(int id, Hotel hotel, int localId, String type, int price) {
+        super(id);
         this.hotel = hotel;
         this.localId = localId;
         this.type = type;
@@ -108,8 +118,17 @@ public class Room extends Entity implements IRoom {
         var grandTotal = calculatePrice(checkIn, checkOut);
 
         var reservation = new Reservation(guest, this, checkIn, checkOut, grandTotal);
-        reservations.add(reservation);
+        insertReservation(reservation);
         return reservation;
+    }
+
+    private void insertReservation(Reservation reservation) {
+        var index = 0;
+        for (var r : reservations) {
+            if (r.getCheckIn().isAfter(reservation.getCheckIn())) break;
+            index++;
+        }
+        reservations.add(index, reservation);
     }
 
     public void removeReservation(Reservation reservation) {
@@ -122,5 +141,25 @@ public class Room extends Entity implements IRoom {
     private int calculatePrice(LocalDate from, LocalDate to) {
         var nights = (int) ChronoUnit.DAYS.between(from, to);
         return nights * price;
+    }
+
+    @Override
+    public RoomDTO toDTO() {
+        var dto = new RoomDTO();
+        dto.id = getId();
+        dto.localId = localId;
+        dto.hotelId = hotel.getId();
+        dto.type = type;
+        dto.price = price;
+        return dto;
+    }
+
+    public static Room fromDTO(RoomDTO dto, Hotel hotel) {
+        return new Room(dto.id, hotel, dto.localId, dto.type, dto.price);
+    }
+    public void addReservation(Reservation reservation) {
+        if (reservation.getRoom().equals(this)) {
+            insertReservation(reservation);
+        }
     }
 }
