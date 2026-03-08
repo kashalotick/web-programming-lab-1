@@ -1,4 +1,4 @@
-﻿package org.example.hotel.core.view;
+package org.example.hotel.core.view;
 
 import java.time.LocalDate;
 import java.util.List;

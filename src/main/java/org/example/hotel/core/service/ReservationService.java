@@ -1,4 +1,4 @@
-﻿package org.example.hotel.core.service;
+package org.example.hotel.core.service;
 
 import org.example.hotel.core.model.*;
 import org.example.hotel.core.view.IReservation;
@@ -14,18 +14,18 @@ public class ReservationService {
             throw new IllegalArgumentException("Hotel not found");
         }
         var availableRooms = hotel.findAvailableRooms(checkIn, checkOut);
-        if (availableRooms.isEmpty()) {
-            throw new IllegalArgumentException("No available rooms");
-        }
         return List.copyOf(availableRooms);
     }
 
-    public static IReservation makeReservation(int hotelId, int roomId, int guestId, LocalDate checkIn, LocalDate checkOut) {
+    public static IReservation makeReservation(int hotelId, int roomLocalId, int guestId, LocalDate checkIn, LocalDate checkOut) {
         var hotel = Entity.read(Hotel.class, hotelId);
-        var room = Entity.read(Room.class, roomId);
+        if (hotel == null) {
+            throw new IllegalArgumentException("Hotel not found");
+        }
+        var room = hotel.getRoom(roomLocalId);
         var guest = Entity.read(Guest.class, guestId);
-        if (hotel == null || room == null || guest == null) {
-            throw new IllegalArgumentException("Hotel, room, or guest not found: " + hotelId + ", " + roomId + ", " + guestId);
+        if (room == null || guest == null) {
+            throw new IllegalArgumentException("Room or guest not found: " + roomLocalId + ", " + guestId);
         }
         var reservation = hotel.reserveRoom(guest, room, checkIn, checkOut);
 
@@ -40,7 +40,12 @@ public class ReservationService {
         if (reservation == null) {
             throw new IllegalArgumentException("Reservation not found");
         }
+        var room = reservation.getRoom();
+        var guest = reservation.getGuest();
+
         reservation.cancel();
         Entity.delete(Reservation.class, reservationId);
+        Entity.update(room);
+        Entity.update(guest);
     }
 }

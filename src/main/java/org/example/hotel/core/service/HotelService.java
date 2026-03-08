@@ -1,4 +1,4 @@
-﻿package org.example.hotel.core.service;
+package org.example.hotel.core.service;
 
 import org.example.hotel.core.model.Entity;
 import org.example.hotel.core.model.Guest;
@@ -23,13 +23,10 @@ public class HotelService {
 
     public static List<IHotel> getAll() {
         var hotels = Entity.readAll(Hotel.class);
-        if (hotels == null) {
-            throw new IllegalArgumentException("No hotels found");
-        }
         return List.copyOf(hotels);
     }
 
-    public static Hotel setName(int id, String name) {
+    public static IHotel setName(int id, String name) {
         var hotel = getWritable(id);
         hotel.setName(name);
         Entity.update(hotel);
@@ -40,7 +37,7 @@ public class HotelService {
     public static void delete(int id) {
         var hotel = get(id);
         if (!hotel.getRooms().isEmpty()) {
-            throw new IllegalArgumentException("Cannot delete guest with reservations");
+            throw new IllegalArgumentException("Cannot delete hotel that still has rooms");
         }
         Entity.delete(Hotel.class, id);
     }
@@ -60,15 +57,16 @@ public class HotelService {
         if (room == null) {
             throw new IllegalArgumentException("Room not found");
         }
-        if (!room.getReservations().isEmpty()) {
-            throw new IllegalArgumentException("Room is not empty");
-        }
         return room;
     }
 
     public static void removeRoomFromHotel(int hotelId, int roomId) {
         var hotel = getWritable(hotelId);
         var room = getRoomInHotel(hotelId, roomId);
+
+        if (!room.getReservations().isEmpty()) {
+            throw new IllegalStateException("Cannot remove room: it has active reservations");
+        }
         hotel.removeRoom(roomId);
         Entity.update(hotel);
         Entity.delete(Room.class, room.getId());

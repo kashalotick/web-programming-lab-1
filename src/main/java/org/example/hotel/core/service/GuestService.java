@@ -1,4 +1,4 @@
-﻿package org.example.hotel.core.service;
+package org.example.hotel.core.service;
 
 import org.example.hotel.core.model.Entity;
 import org.example.hotel.core.model.Guest;
@@ -7,12 +7,10 @@ import org.example.hotel.core.view.IGuest;
 import java.util.List;
 
 public class GuestService {
-
-
     public static IGuest create(String name) {
         var guest = new Guest(name);
         Entity.create(guest);
-        return new Guest(name);
+        return guest;
     }
 
     public static IGuest get(int id) {
@@ -21,9 +19,6 @@ public class GuestService {
 
     public static List<IGuest> getAll() {
         var guests = Entity.readAll(Guest.class);
-        if (guests == null) {
-            throw new IllegalArgumentException("No guests found");
-        }
         return List.copyOf(guests);
     }
 

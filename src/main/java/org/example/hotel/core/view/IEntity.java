@@ -1,4 +1,4 @@
-﻿package org.example.hotel.core.view;
+package org.example.hotel.core.view;
 
 public interface IEntity {
     int getId();
