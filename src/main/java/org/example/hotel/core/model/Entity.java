@@ -1,33 +1,69 @@
 package org.example.hotel.core.model;
 
+import org.example.hotel.core.view.IEntity;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
-public abstract class Entity {
-    public final int id;
-    public static HashMap<Class<?>, Integer> nextIds = new HashMap<>();
-    public static HashMap<Class<?>, HashMap<Integer, Entity>> entities = new HashMap<>();
+public abstract class Entity implements IEntity {
+    private final int id;
+    private static final HashMap<Class<?>, Integer> nextIds = new HashMap<>();
+    private static final HashMap<Class<?>, HashMap<Integer, Entity>> entities = new HashMap<>();
 
-    protected Entity() {
-        this.id = nextIds.computeIfAbsent(this.getClass(), k -> 0);
-        var clazz = this.getClass();
-        System.out.println(clazz);
-        nextIds.put(clazz, id + 1);
+    @Override
+    public int getId() {
+        return id;
     }
 
-    public void create(Entity entity) {
+    protected Entity() {
+        var clazz = this.getClass();
+        this.id = nextIds.getOrDefault(clazz, 0);
+        nextIds.put(clazz, this.id + 1);
+    }
+
+    public static void create(Entity entity) {
         var clazz = entity.getClass();
         entities.computeIfAbsent(clazz, k -> new HashMap<>()).put(entity.id, entity);
     }
-    public Entity read(int id) {
-        var clazz = this.getClass();
-        return entities.get(clazz).get(id);
+
+    public static <T extends Entity> T read(Class<T> clazz, int id) {
+        if (!entities.containsKey(clazz)) return null;
+        return clazz.cast(entities.get(clazz).get(id));
     }
-    public void update(int id, Entity entity) {
-        var clazz = this.getClass();
-        entities.get(clazz).put(id, entity);
+
+    public static <T extends Entity> List<T> readAll(Class<T> clazz) {
+        if (!entities.containsKey(clazz)) return List.of();
+
+        return entities.get(clazz).values().stream()
+                .map(clazz::cast)
+                .toList();
     }
-    public void delete(int id) {
-        var clazz = this.getClass();
-        entities.get(clazz).remove(id);
+
+    public static void update(Entity entity) {
+        var clazz = entity.getClass();
+        if (entities.containsKey(clazz)) {
+            entities.get(clazz).put(entity.id, entity);
+        }
+    }
+
+    public static void delete(Class<?> clazz, int id) {
+        if (entities.containsKey(clazz)) {
+            entities.get(clazz).remove(id);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getClass(), id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Entity other)) return false;
+        if (obj.getClass() != this.getClass()) return false;
+        return this.id == other.id;
     }
 }

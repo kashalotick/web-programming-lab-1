@@ -14,11 +14,14 @@ public class Main {
 //        cli.run();
 //
 //        scanner.close();
-        var g = new Guest();
-        g.create(g);
-        System.out.println(g.read(g.id));
-        g.update(g.id, g);
-        g.delete(g.id);
+
+
+
+//        var g = new Guest();
+//        g.create(g);
+//        System.out.println(g.read(g.id));
+//        g.update(g.id, g);
+//        g.delete(g.id);
 
     }
 }

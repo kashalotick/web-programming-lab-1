@@ -1,84 +1,77 @@
 package org.example.hotel.core.model;
 
+import org.example.hotel.core.view.IHotel;
+import org.example.hotel.core.view.IRoom;
+
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Hotel extends Entity {
-    private HashMap<Integer, Room> rooms = new HashMap<>();
+public class Hotel extends Entity implements IHotel {
+    private final HashMap<Integer, Room> rooms = new HashMap<>();
+    private String name;
 
-    public String name;
+    public Hotel(String name) {
+        this.name = name;
+    }
 
+    @Override
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public List<IRoom> getRooms() {
+        return List.copyOf(rooms.values());
+    }
+
+    @Override
     public float getOccupancyRate(LocalDate from, LocalDate to) {
-        if (from.isAfter(to)) {
+        if (!from.isBefore(to)) {
             throw new IllegalArgumentException("Invalid time period");
         }
-        var totalRooms = rooms.size();
-        var daysInPeriod = from.getDayOfYear() - to.getDayOfYear();
-        if (totalRooms == 0 || daysInPeriod == 0) return 0;
 
-        var occupiedDays = 0;
+        long nights = ChronoUnit.DAYS.between(from, to);
+        if (rooms.isEmpty()) return 0f;
 
-
+        int totalOccupiedNights = 0;
         for (var room : rooms.values()) {
-            var occupancyRate = getOccupancyRate(room, from, to);
-            var occupiedDaysInRoom = occupancyRate * daysInPeriod;
-            occupiedDays += (int) occupiedDaysInRoom;
+            totalOccupiedNights += room.getOccupiedNights(from, to);
         }
 
-        var totalDays = (float) (totalRooms * daysInPeriod);
-        var occupancyRate = occupiedDays / totalDays;
-        return occupancyRate;
+        long totalPossibleNights = nights * rooms.size();
+        return (float) totalOccupiedNights / totalPossibleNights * 100;
     }
 
-    public float getOccupancyRate(Room room, LocalDate from, LocalDate to) {
-        if (from.isAfter(to)) {
-            throw new IllegalArgumentException("Invalid time period");
-        }
-        var daysInPeriod = from.getDayOfYear() - to.getDayOfYear();
-        var occupiedDays = 0;
-
-        for (var res : room.getReservations()) {
-            LocalDate overlapStart = res.checkIn.isBefore(from) ? from : res.checkIn;
-            LocalDate overlapEnd = res.checkOut.isAfter(to) ? to : res.checkOut;
-
-            if (overlapStart.isBefore(overlapEnd)) {
-                occupiedDays += overlapStart.getDayOfYear() - overlapEnd.getDayOfYear();
-            }
-        }
-        var totalDays = (float) (daysInPeriod);
-        var occupancyRate = occupiedDays / totalDays;
-        return occupancyRate;
-    }
-
+    @Override
     public int getRevenue(LocalDate from, LocalDate to) {
-        var revenue = 0;
-        if (from.isAfter(to)) {
+        if (!from.isBefore(to)) {
             throw new IllegalArgumentException("Invalid time period");
         }
-        var daysInPeriod = from.getDayOfYear() - to.getDayOfYear();
 
+        var revenue = 0;
         for (var room : rooms.values()) {
-            var occupancyRate = getOccupancyRate(room, from, to);
-            var occupiedDays = occupancyRate * daysInPeriod;
-            var roomRevenue = occupiedDays * room.price;
-            revenue += (int) roomRevenue;
+            revenue += room.getRevenue(from, to);
         }
-
         return revenue;
     }
 
-    public List<Room> findAvailableRooms(LocalDate checkIn, LocalDate checkOut) {
-        if (checkIn.isAfter(checkOut)) {
-            throw new IllegalArgumentException("Invalid time period");
+    @Override
+    public List<IRoom> findAvailableRooms(LocalDate checkIn, LocalDate checkOut) {
+        if (!checkIn.isBefore(checkOut)) {
+            throw new IllegalArgumentException("Invalid time period: Check-out must be after check-in");
         }
         if (checkIn.isBefore(LocalDate.now())) {
-            throw  new IllegalArgumentException("Check in can not be before today");
+            throw new IllegalArgumentException("Check in can not be before today");
         }
 
-        var available = new ArrayList<Room>();
+        var available = new ArrayList<IRoom>();
         for (var room : rooms.values()) {
             if (room.getIsAvailable(checkIn, checkOut)) {
                 available.add(room);
@@ -88,17 +81,44 @@ public class Hotel extends Entity {
     }
 
     public Reservation reserveRoom(Guest guest, Room room, LocalDate checkIn, LocalDate checkOut) {
-        if (checkIn.isAfter(checkOut)) {
+        if (!checkIn.isBefore(checkOut)) {
             throw new IllegalArgumentException("Invalid time period");
         }
         if (checkIn.isBefore(LocalDate.now())) {
-            throw  new IllegalArgumentException("Check in can not be before today");
+            throw new IllegalArgumentException("Check in can not be before today");
         }
-        if (!rooms.containsKey(room.id)) {
+        if (!rooms.containsKey(room.getLocalId())) {
             throw new IllegalArgumentException("Room not found");
         }
 
         var reservation = room.reserve(guest, checkIn, checkOut);
+        guest.addReservation(reservation);
+
         return reservation;
     }
+
+    public Room addRoom(int localId, String type, int price) {
+        if (rooms.containsKey(localId)) {
+            throw new IllegalArgumentException("Room with this localId already exists");
+        }
+        var room = new Room(this, localId, type, price);
+        rooms.put(localId, room);
+        return room;
+    }
+
+    public void setRoomPrice(int hotelId, int localId, int price) {
+        var room = getRoom(localId);
+        room.setPrice(price);
+        Entity.update(this);
+    }
+
+    @Override
+    public Room getRoom(int localId) {
+        return rooms.get(localId);
+    }
+
+    public void removeRoom(int id) {
+        rooms.remove(id);
+    }
+
 }
