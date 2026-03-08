@@ -1,4 +1,4 @@
-﻿package org.example.hotel.core.dto;
+package org.example.hotel.core.dto;
 
 import java.io.Serializable;
 

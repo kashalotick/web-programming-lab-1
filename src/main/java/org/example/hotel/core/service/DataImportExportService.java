@@ -1,4 +1,4 @@
-﻿package org.example.hotel.core.service;
+package org.example.hotel.core.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
