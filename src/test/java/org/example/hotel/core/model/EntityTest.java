@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EntityTest {
 
-    // Створюємо анонімний клас для тестування абстрактного Entity
     static class TestEntity extends Entity {
         public TestEntity() { super(); }
         public TestEntity(int id) { super(id); }
@@ -33,7 +32,6 @@ class EntityTest {
         TestEntity e = new TestEntity(100);
         assertEquals(100, e.getId());
 
-        // Наступний має бути 101
         TestEntity next = new TestEntity();
         assertEquals(101, next.getId());
     }

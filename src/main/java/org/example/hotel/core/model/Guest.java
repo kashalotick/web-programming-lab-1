@@ -45,6 +45,9 @@ public class Guest extends Entity implements IGuest {
         if (!reservation.getGuest().equals(this)) {
             throw new IllegalArgumentException("Reservation does not belong to this guest");
         }
+        if (!reservations.contains(reservation)) {
+            throw new IllegalStateException("Reservation not found");  // ← додати це
+        }
         reservations.remove(reservation);
     }
 

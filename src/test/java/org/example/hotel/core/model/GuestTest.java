@@ -15,7 +15,6 @@ class GuestTest {
         Guest guest2 = new Guest("Oleg");
         Room mockRoom = mock(Room.class);
 
-        // Створюємо резервацію для guest2
         Reservation resForOther = new Reservation(guest2, mockRoom, null, null, 100);
 
         assertThrows(IllegalArgumentException.class, () -> guest1.addReservation(resForOther));

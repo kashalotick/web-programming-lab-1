@@ -65,7 +65,7 @@ public class Reservation extends Entity implements IReservation {
 
     @Override
     public int getDuration() {
-        var nights = ChronoUnit.DAYS.between(checkOut, checkIn);
+        var nights = ChronoUnit.DAYS.between(checkIn, checkOut);
         return (int) nights;
     }
 

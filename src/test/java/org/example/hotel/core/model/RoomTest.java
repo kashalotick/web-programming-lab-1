@@ -18,7 +18,7 @@ class RoomTest {
     void setUp() {
         mockHotel = mock(Hotel.class);
         mockGuest = mock(Guest.class);
-        // Створюємо кімнату з ціною 100 за ніч
+
         room = new Room(mockHotel, 101, "Standard", 100);
     }
 
@@ -27,15 +27,11 @@ class RoomTest {
     void testAvailability() {
         LocalDate today = LocalDate.now();
 
-        // Спочатку кімната вільна
         assertTrue(room.getIsAvailable(today, today.plusDays(1)));
 
-        // Бронюємо
         room.reserve(mockGuest, today, today.plusDays(1));
 
-        // Тепер на ці дати вона зайнята
         assertFalse(room.getIsAvailable(today, today.plusDays(1)));
-        // А на наступний тиждень вільна
         assertTrue(room.getIsAvailable(today.plusDays(7), today.plusDays(8)));
     }
 
@@ -57,7 +53,6 @@ class RoomTest {
         LocalDate checkOut = LocalDate.now().plusDays(5); // 3 ночі = 300
         room.reserve(mockGuest, checkIn, checkOut);
 
-        // Весь період входить: 300
         assertEquals(300, room.getRevenue(LocalDate.now(), LocalDate.now().plusDays(10)));
 
         // Період лише на 1 ніч перетинається
@@ -79,4 +74,19 @@ class RoomTest {
         // Першою має бути та, що раніше (d2)
         assertEquals(d2, reservations.get(0).getCheckIn());
     }
+
+    @Test
+    @DisplayName("Room не має видаляти бронювання, яке йому не належить")
+    void testRoomSecurityOnRemove() {
+        Room roomA = new Room(mockHotel, 1, "A", 100);
+        Room roomB = new Room(mockHotel, 2, "B", 100);
+
+        Reservation resA = new Reservation(mockGuest, roomA, LocalDate.now(), LocalDate.now().plusDays(1), 100);
+
+        // Намагаємось видалити з roomB резервацію, яка стосується roomA
+        assertThrows(IllegalArgumentException.class, () ->
+                roomB.removeReservation(resA)
+        );
+    }
+
 }

@@ -135,6 +135,9 @@ public class Room extends Entity implements IRoom {
         if (!reservation.getRoom().equals(this)) {
             throw new IllegalArgumentException("Reservation does not belong to this room");
         }
+        if (!reservations.contains(reservation)) {
+            throw new IllegalStateException("Reservation not found");
+        }
         reservations.remove(reservation);
     }
 

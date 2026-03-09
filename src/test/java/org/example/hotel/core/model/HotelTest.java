@@ -17,6 +17,7 @@ class HotelTest {
     void setUp() {
         hotel = new Hotel("Grand Hotel");
         mockGuest = mock(Guest.class);
+
     }
 
     @Test
@@ -28,7 +29,6 @@ class HotelTest {
         LocalDate start = LocalDate.now().plusDays(1);
         LocalDate end = LocalDate.now().plusDays(2);
 
-        // Бронюємо першу кімнату
         r1.reserve(mockGuest, start, end);
 
         var available = hotel.findAvailableRooms(start, end);
@@ -40,12 +40,11 @@ class HotelTest {
     @Test
     @DisplayName("Має правильно агрегувати Occupancy Rate готелю")
     void testHotelOccupancyRate() {
-        // 2 кімнати
         Room r1 = hotel.addRoom(1, "SNG", 100);
         Room r2 = hotel.addRoom(2, "SNG", 100);
 
         LocalDate from = LocalDate.now().plusDays(1);
-        LocalDate to = LocalDate.now().plusDays(2); // Період 1 ніч
+        LocalDate to = LocalDate.now().plusDays(2);
 
         // Якщо 1 кімната зайнята на цю ніч, а інша вільна -> 50%
         r1.reserve(mockGuest, from, to);
@@ -67,4 +66,30 @@ class HotelTest {
         assertThrows(IllegalArgumentException.class,
                 () -> hotel.reserveRoom(mockGuest, room, today.minusDays(5), today.plusDays(1)));
     }
+
+    @Test
+    @DisplayName("Має забороняти додавання кімнати з дублюючим localId")
+    void testDuplicateRoomId() {
+        hotel.addRoom(101, "Standard", 100);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                hotel.addRoom(101, "Duplicate", 200)
+        );
+    }
+
+    @Test
+    @DisplayName("Має викидати помилку, якщо кімната не належить цьому готелю")
+    void testRoomNotFoundInHotel() {
+        Hotel otherHotel = new Hotel("Other Hotel");
+        Room otherRoom = otherHotel.addRoom(202, "Luxury", 500);
+
+        LocalDate in = LocalDate.now().plusDays(1);
+        LocalDate out = LocalDate.now().plusDays(2);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                        hotel.reserveRoom(mockGuest, otherRoom, in, out),
+                "Має бути помилка 'Room not found'"
+        );
+    }
+
 }

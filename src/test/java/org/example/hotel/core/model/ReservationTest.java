@@ -12,7 +12,6 @@ class ReservationTest {
     @Test
     @DisplayName("Метод cancel() має видаляти посилання і в Кімнаті, і в Гостя")
     void testCancelWorkflow() {
-        // Використовуємо реальні об'єкти для перевірки повної взаємодії
         Hotel hotel = new Hotel("Test");
         Room room = hotel.addRoom(101, "Lux", 200);
         Guest guest = new Guest("Taras");
@@ -20,16 +19,13 @@ class ReservationTest {
         LocalDate start = LocalDate.now().plusDays(1);
         LocalDate end = LocalDate.now().plusDays(2);
 
-        // 1. Створюємо бронювання через готель (це зв'язує всі класи)
         Reservation res = hotel.reserveRoom(guest, room, start, end);
 
         assertEquals(1, room.getReservations().size());
         assertEquals(1, guest.getReservations().size());
 
-        // 2. Скасовуємо
         res.cancel();
 
-        // 3. Перевіряємо, що всюди пусто
         assertEquals(0, room.getReservations().size(), "Резервація має бути видалена з кімнати");
         assertEquals(0, guest.getReservations().size(), "Резервація має бути видалена з гостя");
     }
