@@ -69,7 +69,6 @@ public class CommandLineInterface {
         var results = commandHandlers.subMap(tokens[0], tokens[0] + Character.MAX_VALUE);
         if (results.size() == 1) {
             var commandName = results.firstKey();
-            System.out.println(commandName);
             commandHandlers.get(commandName).handle(tokens[1]);
         } else {
             throw new CLISyntaxException("Invalid command. Choose one of the following commands: " + commandHandlers.keySet());
@@ -85,6 +84,5 @@ public class CommandLineInterface {
             hs += ch.getHelpString();
         }
         System.out.println(hs);
-
     }
 }
