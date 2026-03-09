@@ -114,7 +114,7 @@ public class Hotel extends Entity implements IHotel {
         return room;
     }
 
-    public void setRoomPrice(int hotelId, int localId, int price) {
+    public void setRoomPrice(int localId, int price) {
         var room = getRoom(localId);
         room.setPrice(price);
         Entity.update(this);

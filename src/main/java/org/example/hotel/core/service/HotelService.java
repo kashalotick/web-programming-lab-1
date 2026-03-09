@@ -74,11 +74,9 @@ public class HotelService {
 
     public IRoom setRoomPrice(int hotelId, int roomId, int price) {
         var hotel = getWritable(hotelId);
+        hotel.setRoomPrice(roomId, price);
+
         var room = hotel.getRoom(roomId);
-        if (room == null) {
-            throw new IllegalArgumentException("Room not found");
-        }
-        room.setPrice(price);
         Entity.update(room);
         return room;
     }
