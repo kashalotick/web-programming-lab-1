@@ -20,11 +20,13 @@ class DataImportExportServiceTest {
     @TempDir
     Path tempDir;
 
+    private DataImportExportService service;
     private String testFilePath;
     private MockedStatic<Entity> entityMock;
 
     @BeforeEach
     void setUp() {
+        service = new DataImportExportService();
         testFilePath = tempDir.resolve("mock_data.json").toString();
         // Створюємо статичний мок для класу Entity перед кожним тестом
         entityMock = mockStatic(Entity.class);
@@ -53,7 +55,7 @@ class DataImportExportServiceTest {
         entityMock.when(() -> Entity.readAll(Reservation.class)).thenReturn(List.of());
 
         // 2. Викликаємо сервіс
-        DataImportExportService.exportJSON(testFilePath);
+        service.exportJSON(testFilePath);
 
         // 3. Перевірки (Verifications)
         // Чи викликав сервіс метод readAll?
@@ -71,10 +73,10 @@ class DataImportExportServiceTest {
         entityMock.when(() -> Entity.readAll(Room.class)).thenReturn(List.of());
         entityMock.when(() -> Entity.readAll(Reservation.class)).thenReturn(List.of());
 
-        DataImportExportService.exportJSON(testFilePath);
+        service.exportJSON(testFilePath);
 
         // Тепер тестуємо імпорт
-        DataImportExportService.importJSON(testFilePath);
+        service.importJSON(testFilePath);
 
         // Перевіряємо, чи викликався Entity.create під час імпорту
         entityMock.verify(() -> Entity.create(any(Guest.class)), atLeastOnce());
@@ -97,13 +99,13 @@ class DataImportExportServiceTest {
         entityMock.when(() -> Entity.readAll(Reservation.class)).thenReturn(List.of());
 
         // Створюємо файл фізично
-        DataImportExportService.exportJSON(testFilePath);
+        service.exportJSON(testFilePath);
 
         // 2. Налаштовуємо мок так, щоб Entity.read(Hotel.class, 999) повертав null
         entityMock.when(() -> Entity.read(eq(Hotel.class), anyInt())).thenReturn(null);
 
         // 3. Тепер імпорт знайде файл, але не знайде готель у базі
-        assertDoesNotThrow(() -> DataImportExportService.importJSON(testFilePath));
+        assertDoesNotThrow(() -> service.importJSON(testFilePath));
 
         // Перевіряємо, що ми хоча б намагалися прочитати готель
         entityMock.verify(() -> Entity.read(eq(Hotel.class), eq(999)));

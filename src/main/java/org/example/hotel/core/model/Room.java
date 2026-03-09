@@ -2,6 +2,7 @@ package org.example.hotel.core.model;
 
 import org.example.hotel.core.dto.ReservationDTO;
 import org.example.hotel.core.dto.RoomDTO;
+import org.example.hotel.core.view.IEntity;
 import org.example.hotel.core.view.IReservation;
 import org.example.hotel.core.view.IRoom;
 
@@ -62,7 +63,7 @@ public class Room extends Entity implements IRoom {
     }
 
 
-    @Override
+
     public int getOccupiedNights(LocalDate from, LocalDate to) {
         int occupied = 0;
         for (var reservation : reservations) {
@@ -160,9 +161,15 @@ public class Room extends Entity implements IRoom {
     public static Room fromDTO(RoomDTO dto, Hotel hotel) {
         return new Room(dto.id, hotel, dto.localId, dto.type, dto.price);
     }
+
     public void addReservation(Reservation reservation) {
         if (reservation.getRoom().equals(this)) {
             insertReservation(reservation);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Room: id=" + getId() + ", hotel=" + getHotel().getId() + ", localId=" + getLocalId() + ", type=" + getType() + ", price=" + getPrice() + ", reservations=" + getReservations().stream().map(IEntity::getId);
     }
 }

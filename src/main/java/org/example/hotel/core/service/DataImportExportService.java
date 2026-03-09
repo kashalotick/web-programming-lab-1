@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 public class DataImportExportService {
-    private static final ObjectMapper mapper = new ObjectMapper()
+    private final ObjectMapper mapper = new ObjectMapper()
             .enable(SerializationFeature.INDENT_OUTPUT);
 
-    public static void exportJSON(String filename) {
+    public void exportJSON(String filename) {
         var serializable = convertToSerializable();
         try {
             mapper.writeValue(new File(filename), serializable);
@@ -24,7 +24,7 @@ public class DataImportExportService {
         }
     }
 
-    public static void importJSON(String filename) {
+    public void importJSON(String filename) {
         Entity.clear();
         try {
             var rootNode = mapper.readTree(new File(filename));
@@ -97,7 +97,7 @@ public class DataImportExportService {
     }
 
 
-    private static Map<String, List<? extends Serializable>> convertToSerializable() {
+    private Map<String, List<? extends Serializable>> convertToSerializable() {
         HashMap<String, List<? extends Serializable>> serializable = new HashMap<>();
 
         var guests = Entity.readAll(Guest.class);
@@ -113,7 +113,7 @@ public class DataImportExportService {
         return serializable;
     }
 
-    private static List<Serializable> convertEntitiesToSerializable(List<? extends Entity> entities) {
+    private List<Serializable> convertEntitiesToSerializable(List<? extends Entity> entities) {
         List<Serializable> list = new ArrayList<>();
         entities.forEach(entity -> list.add(entity.toDTO()));
         return list;

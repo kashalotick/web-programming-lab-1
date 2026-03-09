@@ -1,6 +1,7 @@
 package org.example.hotel.core.model;
 
 import org.example.hotel.core.dto.GuestDTO;
+import org.example.hotel.core.view.IEntity;
 import org.example.hotel.core.view.IGuest;
 import org.example.hotel.core.view.IReservation;
 
@@ -61,5 +62,11 @@ public class Guest extends Entity implements IGuest {
 
     public static Guest fromDTO(GuestDTO dto) {
         return new Guest(dto.id, dto.name);
+    }
+
+
+    @Override
+    public String toString() {
+        return "Guest: id=" + getId() + ", name=" + getName() + ", reservations=" + getReservations().stream().map(IEntity::getId);
     }
 }

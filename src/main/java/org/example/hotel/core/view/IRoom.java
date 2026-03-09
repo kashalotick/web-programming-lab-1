@@ -10,7 +10,7 @@ public interface IRoom extends IEntity {
     int getPrice();
     List<IReservation> getReservations();
 
-    int getOccupiedNights(LocalDate from, LocalDate to);
+//    int getOccupiedNights(LocalDate from, LocalDate to);
     float getOccupancyRate(LocalDate from, LocalDate to);
     int getRevenue(LocalDate from, LocalDate to);
     boolean getIsAvailable(LocalDate checkIn, LocalDate checkOut);

@@ -1,6 +1,7 @@
 package org.example.hotel.core.model;
 
 import org.example.hotel.core.dto.HotelDTO;
+import org.example.hotel.core.view.IEntity;
 import org.example.hotel.core.view.IHotel;
 import org.example.hotel.core.view.IRoom;
 
@@ -144,6 +145,9 @@ public class Hotel extends Entity implements IHotel {
             rooms.put(room.getLocalId(), room);
         }
      }
-
+    @Override
+    public String toString() {
+        return "Hotel: id=" + getId() + ", name=" + getName() + ", rooms=" + getRooms().stream().map(IEntity::getId);
+    }
 
 }

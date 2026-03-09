@@ -1,27 +1,22 @@
 package org.example.hotel;
 
 import org.example.hotel.core.model.Guest;
+import org.example.hotel.core.view.IReservation;
 import org.example.hotel.ui.cli.CommandLineInterface;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-//
-//        var scanner = new Scanner(System.in);
-//
-//        var cli = new CommandLineInterface(scanner);
-//        cli.run();
-//
-//        scanner.close();
 
+        var scanner = new Scanner(System.in);
 
+        var cli = new CommandLineInterface(scanner);
+        cli.run();
 
-//        var g = new Guest();
-//        g.create(g);
-//        System.out.println(g.read(g.id));
-//        g.update(g.id, g);
-//        g.delete(g.id);
+        scanner.close();
 
     }
 }

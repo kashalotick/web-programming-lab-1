@@ -83,4 +83,9 @@ public abstract class Entity implements IEntity {
         entities.clear();
         nextIds.clear();
     }
+
+    @Override
+    public String toString() {
+        return "Entity: id=" + getId();
+    }
 }

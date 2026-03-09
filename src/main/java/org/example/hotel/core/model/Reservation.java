@@ -1,6 +1,7 @@
 package org.example.hotel.core.model;
 
 import org.example.hotel.core.dto.ReservationDTO;
+import org.example.hotel.core.view.IEntity;
 import org.example.hotel.core.view.IHotel;
 import org.example.hotel.core.view.IReservation;
 
@@ -91,5 +92,10 @@ public class Reservation extends Entity implements IReservation {
         var checkIn = LocalDate.parse(dto.checkIn, DateTimeFormatter.ISO_DATE);
         var checkOut = LocalDate.parse(dto.checkOut, DateTimeFormatter.ISO_DATE);
         return new Reservation(dto.id, guest, room, checkIn, checkOut, dto.grandTotal);
+    }
+
+    @Override
+    public String toString() {
+        return "Guest: id=" + getId() + ", guest=" + getGuest().getId() + ", hotel=" + getHotel().getId() + ", room=" + getRoom().getId() + checkIn + ", checkOut=" + checkOut + ", grandTotal=" + grandTotal;
     }
 }

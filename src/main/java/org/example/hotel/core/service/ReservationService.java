@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ReservationService {
-    public static List<IRoom> getAvailableRooms(int hotelId, LocalDate checkIn, LocalDate checkOut) {
+    public List<IRoom> getAvailableRooms(int hotelId, LocalDate checkIn, LocalDate checkOut) {
         var hotel = Entity.read(Hotel.class, hotelId);
         if (hotel == null) {
             throw new IllegalArgumentException("Hotel not found");
@@ -17,7 +17,7 @@ public class ReservationService {
         return List.copyOf(availableRooms);
     }
 
-    public static IReservation makeReservation(int hotelId, int roomLocalId, int guestId, LocalDate checkIn, LocalDate checkOut) {
+    public IReservation makeReservation(int hotelId, int roomLocalId, int guestId, LocalDate checkIn, LocalDate checkOut) {
         var hotel = Entity.read(Hotel.class, hotelId);
         if (hotel == null) {
             throw new IllegalArgumentException("Hotel not found");
@@ -35,7 +35,15 @@ public class ReservationService {
         return reservation;
     }
 
-    public static void cancelReservation(int reservationId) {
+    public IReservation getReservation(int reservationId) {
+        var reservation = Entity.read(Reservation.class, reservationId);
+        if (reservation == null) {
+            throw new IllegalArgumentException("Reservation not found");
+        }
+        return reservation;
+    }
+
+    public void cancelReservation(int reservationId) {
         var reservation = Entity.read(Reservation.class, reservationId);
         if (reservation == null) {
             throw new IllegalArgumentException("Reservation not found");
