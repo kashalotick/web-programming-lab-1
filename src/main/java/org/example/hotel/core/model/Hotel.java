@@ -148,7 +148,7 @@ public class Hotel extends Entity implements IHotel {
      }
     @Override
     public String toString() {
-        return "Hotel: id=" + getId() + ", name=" + getName() + ", rooms=" + getRooms().stream().map(IEntity::getId).collect(Collectors.toList());
+        return "Hotel: id=" + getId() + ", name=" + getName() + ", rooms=" + getRooms().stream().map(IRoom::getLocalId).collect(Collectors.toList());
     }
 
 }
