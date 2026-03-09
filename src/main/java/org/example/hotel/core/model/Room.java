@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Room extends Entity implements IRoom {
     private final LinkedList<Reservation> reservations = new LinkedList<>();
@@ -170,6 +171,6 @@ public class Room extends Entity implements IRoom {
 
     @Override
     public String toString() {
-        return "Room: id=" + getId() + ", hotel=" + getHotel().getId() + ", localId=" + getLocalId() + ", type=" + getType() + ", price=" + getPrice() + ", reservations=" + getReservations().stream().map(IEntity::getId);
+        return "Room: id=" + getId() + ", hotel=" + getHotel().getId() + ", localId=" + getLocalId() + ", type=" + getType() + ", price=" + getPrice() + ", reservations=" + getReservations().stream().map(IEntity::getId).collect(Collectors.toList());
     }
 }

@@ -173,7 +173,12 @@ public class HotelHandler implements ICommandHandler {
 
     private void list() {
         var hotels = hotelService.getAll();
-        DisplayHelper.printEntityList(hotels);
+        if (hotels.isEmpty()) {
+            DisplayHelper.printDefault("Empty");
+        }
+        else {
+            DisplayHelper.printEntityList(hotels);
+        }
     }
 
     private void delete(String args) {

@@ -72,8 +72,12 @@ public class GuestHandler implements ICommandHandler {
 
     private void list() {
         var guests = guestService.getAll();
-        DisplayHelper.printEntityList(guests);
-    }
+        if (guests.isEmpty()) {
+            DisplayHelper.printDefault("Empty");
+        }
+        else {
+            DisplayHelper.printEntityList(guests);
+        }    }
 
     private void delete(String args) {
         var id = Integer.parseInt(args.strip());

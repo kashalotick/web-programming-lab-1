@@ -7,6 +7,7 @@ import org.example.hotel.core.view.IReservation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Guest extends Entity implements IGuest {
     private String name;
@@ -67,6 +68,6 @@ public class Guest extends Entity implements IGuest {
 
     @Override
     public String toString() {
-        return "Guest: id=" + getId() + ", name=" + getName() + ", reservations=" + getReservations().stream().map(IEntity::getId);
+        return "Guest: id=" + getId() + ", name=" + getName() + ", reservations=" + getReservations().stream().map(IEntity::getId).collect(Collectors.toList());
     }
 }

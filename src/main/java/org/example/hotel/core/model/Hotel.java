@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Hotel extends Entity implements IHotel {
     private final HashMap<Integer, Room> rooms = new HashMap<>();
@@ -147,7 +148,7 @@ public class Hotel extends Entity implements IHotel {
      }
     @Override
     public String toString() {
-        return "Hotel: id=" + getId() + ", name=" + getName() + ", rooms=" + getRooms().stream().map(IEntity::getId);
+        return "Hotel: id=" + getId() + ", name=" + getName() + ", rooms=" + getRooms().stream().map(IEntity::getId).collect(Collectors.toList());
     }
 
 }
