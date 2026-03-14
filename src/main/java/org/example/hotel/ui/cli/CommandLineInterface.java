@@ -1,5 +1,9 @@
 package org.example.hotel.ui.cli;
 
+import org.example.hotel.core.repository.GuestRepository;
+import org.example.hotel.core.repository.HotelRepository;
+import org.example.hotel.core.repository.ReservationRepository;
+import org.example.hotel.core.repository.RoomRepository;
 import org.example.hotel.core.service.DataImportExportService;
 import org.example.hotel.core.service.GuestService;
 import org.example.hotel.core.service.HotelService;
@@ -19,9 +23,10 @@ public class CommandLineInterface {
         this.scanner = scanner;
         isExitRequested = false;
         commandHandlers = new TreeMap<>();
-        commandHandlers.put(GuestHandler.commandName, new GuestHandler(new GuestService()));
-        commandHandlers.put(HotelHandler.commandName, new HotelHandler(new HotelService()));
-        commandHandlers.put(ReservationHandler.commandName, new ReservationHandler(new ReservationService()));
+        commandHandlers.put(GuestHandler.commandName, new GuestHandler(new GuestService(new GuestRepository())));
+        commandHandlers.put(HotelHandler.commandName, new HotelHandler(new HotelService(new HotelRepository(), new RoomRepository())));
+        commandHandlers.put(ReservationHandler.commandName, new ReservationHandler(new ReservationService(new HotelRepository(), new GuestRepository(),
+                new ReservationRepository(), new RoomRepository())));
         commandHandlers.put(DataHandler.commandName, new DataHandler(new DataImportExportService()));
 
     }
@@ -35,7 +40,7 @@ public class CommandLineInterface {
                 handleCommand(command);
             } catch (CLISyntaxException e) {
                 DisplayHelper.printYellow("Syntax Error: " + e.getMessage());
-            }  catch (Exception e) {
+            } catch (Exception e) {
                 DisplayHelper.printRed("Error: " + e.getMessage());
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
@@ -78,6 +83,7 @@ public class CommandLineInterface {
     private void Exit() {
         isExitRequested = true;
     }
+
     private void handleHelp() {
         var hs = "exit\nhelp\n";
         for (var ch : commandHandlers.values()) {

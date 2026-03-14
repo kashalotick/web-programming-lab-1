@@ -25,15 +25,6 @@ public class Reservation extends Entity implements IReservation {
         this.grandTotal = grandTotal;
     }
 
-    protected Reservation(int id, Guest guest, Room room, LocalDate checkIn, LocalDate checkOut, int grandTotal) {
-        super(id);
-        this.guest = guest;
-        this.room = room;
-        this.checkIn = checkIn;
-        this.checkOut = checkOut;
-        this.grandTotal = grandTotal;
-    }
-
     @Override
     public Guest getGuest() {
         return guest;
@@ -91,7 +82,9 @@ public class Reservation extends Entity implements IReservation {
     public static Reservation fromDTO(ReservationDTO dto, Room room, Guest guest) {
         var checkIn = LocalDate.parse(dto.checkIn, DateTimeFormatter.ISO_DATE);
         var checkOut = LocalDate.parse(dto.checkOut, DateTimeFormatter.ISO_DATE);
-        return new Reservation(dto.id, guest, room, checkIn, checkOut, dto.grandTotal);
+        var reservation = new Reservation(guest, room, checkIn, checkOut, dto.grandTotal);
+        reservation.setId(dto.id);
+        return reservation;
     }
 
     @Override

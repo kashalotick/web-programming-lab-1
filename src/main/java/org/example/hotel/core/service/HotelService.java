@@ -1,18 +1,27 @@
 package org.example.hotel.core.service;
 
 import org.example.hotel.core.model.Entity;
-import org.example.hotel.core.model.Guest;
 import org.example.hotel.core.model.Hotel;
 import org.example.hotel.core.model.Room;
+import org.example.hotel.core.repository.HotelRepository;
+import org.example.hotel.core.repository.RoomRepository;
 import org.example.hotel.core.view.IHotel;
 import org.example.hotel.core.view.IRoom;
 
 import java.util.List;
 
 public class HotelService {
+    private final HotelRepository hotelRepository;
+    private final RoomRepository roomRepository;
+
+    public HotelService(HotelRepository hotelRepository, RoomRepository roomRepository) {
+        this.hotelRepository = hotelRepository;
+        this.roomRepository = roomRepository;
+    }
+
     public IHotel create(String name) {
         var hotel = new Hotel(name);
-        Entity.create(hotel);
+        hotelRepository.create(hotel);
         return hotel;
     }
 
@@ -20,72 +29,62 @@ public class HotelService {
         return getWritable(id);
     }
 
-
     public List<IHotel> getAll() {
-        var hotels = Entity.readAll(Hotel.class);
-        return List.copyOf(hotels);
+        return List.copyOf(hotelRepository.readAllWithRooms(roomRepository));
     }
 
     public IHotel setName(int id, String name) {
         var hotel = getWritable(id);
         hotel.setName(name);
-        Entity.update(hotel);
+        hotelRepository.update(hotel);
         return hotel;
     }
 
-
     public void delete(int id) {
-        var hotel = get(id);
+        var hotel = getWritable(id);
         if (!hotel.getRooms().isEmpty()) {
             throw new IllegalArgumentException("Cannot delete hotel that still has rooms");
         }
-        Entity.delete(Hotel.class, id);
+        hotelRepository.delete(id);
     }
-
 
     public IRoom addRoomToHotel(int hotelId, int localId, String type, int price) {
         var hotel = getWritable(hotelId);
         var room = hotel.addRoom(localId, type, price);
-        Entity.create(room);
-        Entity.update(hotel);
+        roomRepository.create(room);
         return room;
     }
 
-    public IRoom getRoomInHotel(int hotelId, int roomId) {
+    public IRoom getRoomInHotel(int hotelId, int localId) {
         var hotel = getWritable(hotelId);
-        var room = hotel.getRoom(roomId);
+        var room = hotel.getRoom(localId);
         if (room == null) {
             throw new IllegalArgumentException("Room not found");
         }
         return room;
     }
 
-    public void removeRoomFromHotel(int hotelId, int roomId) {
+    public void removeRoomFromHotel(int hotelId, int localId) {
         var hotel = getWritable(hotelId);
-        var room = getRoomInHotel(hotelId, roomId);
+        var room = (Room) getRoomInHotel(hotelId, localId);
 
         if (!room.getReservations().isEmpty()) {
             throw new IllegalStateException("Cannot remove room: it has active reservations");
         }
-        hotel.removeRoom(roomId);
-        Entity.update(hotel);
-        Entity.delete(Room.class, room.getId());
+        hotel.removeRoom(localId);
+        roomRepository.delete(room.getId());
     }
 
-    public IRoom setRoomPrice(int hotelId, int roomId, int price) {
+    public IRoom setRoomPrice(int hotelId, int localId, int price) {
         var hotel = getWritable(hotelId);
-        hotel.setRoomPrice(roomId, price);
-
-        var room = hotel.getRoom(roomId);
-        Entity.update(room);
+        hotel.setRoomPrice(localId, price);
+        var room = hotel.getRoom(localId);
+        roomRepository.update(room);
         return room;
     }
 
     private Hotel getWritable(int id) {
-        var hotel = Entity.read(Hotel.class, id);
-        if (hotel == null) {
-            throw new IllegalArgumentException("Hotel not found");
-        }
-        return hotel;
+        return hotelRepository.readWithRooms(id, roomRepository)
+                .orElseThrow(() -> new IllegalArgumentException("Hotel not found"));
     }
 }

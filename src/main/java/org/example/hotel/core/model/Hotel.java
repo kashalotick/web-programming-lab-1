@@ -20,10 +20,6 @@ public class Hotel extends Entity implements IHotel {
         this.name = name;
     }
 
-    protected Hotel(int id, String name) {
-        super(id);
-        this.name = name;
-    }
 
     @Override
     public String getName() {
@@ -117,7 +113,6 @@ public class Hotel extends Entity implements IHotel {
     public void setRoomPrice(int localId, int price) {
         var room = getRoom(localId);
         room.setPrice(price);
-        Entity.update(this);
     }
 
     @Override
@@ -138,7 +133,9 @@ public class Hotel extends Entity implements IHotel {
     }
 
     public static Hotel fromDTO(HotelDTO dto) {
-        return new Hotel(dto.id, dto.name);
+        var hotel = new Hotel(dto.name);
+        hotel.setId(dto.id);
+        return hotel;
     }
 
     public void addRoom(Room room) {

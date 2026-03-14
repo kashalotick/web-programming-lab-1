@@ -17,11 +17,6 @@ public class Guest extends Entity implements IGuest {
         this.name = name;
     }
 
-    private Guest(int id, String name) {
-        super(id);
-        this.name = name;
-    }
-
     @Override
     public String getName() {
         return name;
@@ -62,7 +57,9 @@ public class Guest extends Entity implements IGuest {
     }
 
     public static Guest fromDTO(GuestDTO dto) {
-        return new Guest(dto.id, dto.name);
+        var guest = new Guest(dto.name);
+        guest.setId(dto.id);
+        return guest;
     }
 
 

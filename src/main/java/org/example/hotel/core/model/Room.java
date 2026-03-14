@@ -26,14 +26,6 @@ public class Room extends Entity implements IRoom {
         this.price = price;
     }
 
-    protected Room(int id, Hotel hotel, int localId, String type, int price) {
-        super(id);
-        this.hotel = hotel;
-        this.localId = localId;
-        this.type = type;
-        this.price = price;
-    }
-
     @Override
     public Hotel getHotel() {
         return hotel;
@@ -55,6 +47,7 @@ public class Room extends Entity implements IRoom {
     }
 
     public void setPrice(int price) {
+        if (price < 0) throw new IllegalArgumentException("Price cannot be negative");
         this.price = price;
     }
 
@@ -62,7 +55,6 @@ public class Room extends Entity implements IRoom {
     public List<IReservation> getReservations() {
         return List.copyOf(reservations);
     }
-
 
 
     public int getOccupiedNights(LocalDate from, LocalDate to) {
@@ -160,7 +152,9 @@ public class Room extends Entity implements IRoom {
     }
 
     public static Room fromDTO(RoomDTO dto, Hotel hotel) {
-        return new Room(dto.id, hotel, dto.localId, dto.type, dto.price);
+        Room room = new Room(hotel, dto.localId, dto.type, dto.price);
+        room.setId(dto.id);
+        return room;
     }
 
     public void addReservation(Reservation reservation) {
